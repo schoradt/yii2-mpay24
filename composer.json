@@ -15,7 +15,7 @@
     },
     "require": {
         "php": ">=5.6.0",
-        "schoradt/mpay24": "~4.0"
+        "schoradt/mpay24": "dev-master"
     },
     "repositories": [
         {
