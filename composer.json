@@ -1,0 +1,26 @@
+{
+    "name": "schoradt/yii2-mpay24",
+    "description": "MPay 24 API Integration intoi yii2 framework",
+    "keywords": ["yii2", "extension", "widget", "mpay24"],
+    "homepage": "https://github.com/schoradt/yii2-mpay24",
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "authors": [
+        { "name": "Sven Schoradt", "email": "s.schoradt@infotec-edv.de", "homepage": "http://www.infotec-edv.de/", "role": "forkedby" }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Yii2MPay24\\": "src"
+        }
+    },
+    "require": {
+        "php": ">=5.6.0",
+        "schoradt/mpay24": "~4.0"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/schoradt/mpay24"
+        }
+    ]
+}
