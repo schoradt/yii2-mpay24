@@ -118,7 +118,7 @@ class Order extends Object {
     public function addItem(OrderItem $item) {
         $this->cardItems[] = $item;
 
-        $this->price += $item->getPrice();
+        $this->price += $item->price;
     }
 
     public function getItems() {

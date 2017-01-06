@@ -27,7 +27,12 @@
 
 namespace Yii2MPay24;
 
+use Yii;
 use yii\base\Object;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
+
+use MPayAPI\MPAY24;
 
 /**
  * Description of RedirectIntegration
@@ -124,7 +129,7 @@ class RedirectIntegration extends Object {
      */
     public function __construct($data)
     {
-        $data['options'] = ArrayHelper::merge($this->defaultOptions, $data['options']);
+        $data['options'] = ArrayHelper::merge($this->defaultOptions, (isset($data['options'])?$data['options']:[]));
 
         parent::__construct($data);
 
@@ -162,12 +167,16 @@ class RedirectIntegration extends Object {
         return $this->mpay24->selectPayment($mdxi);
     }
 
+    public function transactionStatus($tid) {
+        return $this->mpay24->transactionStatus(null, $tid);
+    }
+
     private function createMdxi(Order $order) {
-        $mdxi = new ORDER();
+        $mdxi = new \MPayAPI\ORDER();
 
         $mdxi->Order->Tid = $order->tid;
 
-        $mdxi->Order->ClientIP = filter_input(INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP);
+        //$mdxi->Order->ClientIP = filter_input(INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP);
 
         $this->configureOrderStyles($mdxi);
 
@@ -245,7 +254,7 @@ class RedirectIntegration extends Object {
         //$mdxi->Order->BillingAddr->Street2 = $this->customer_street2;
         $mdxi->Order->BillingAddr->Zip     = $order->customerZip;
         $mdxi->Order->BillingAddr->City    = $order->customerCity;
-        $mdxi->Order->BillingAddr->Email   = $order->customerMail;
+        //TODO $mdxi->Order->BillingAddr->Email   = $order->customerMail;
 
         $mdxi->Order->BillingAddr->Country->setCode($order->customerCountry);
 
@@ -255,7 +264,7 @@ class RedirectIntegration extends Object {
         //$mdxi->Order->ShippingAddr->Street2 = $this->customer_street2;
         $mdxi->Order->ShippingAddr->Zip     = $order->customerZip;
         $mdxi->Order->ShippingAddr->City    = $order->customerCity;
-        $mdxi->Order->ShippingAddr->Email   = $order->customerMail;
+        //TODO $mdxi->Order->ShippingAddr->Email   = $order->customerMail;
 
         $mdxi->Order->ShippingAddr->Country->setCode($order->customerCountry);
 
