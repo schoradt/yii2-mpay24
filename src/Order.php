@@ -36,75 +36,85 @@ use yii\base\Object;
  * @author Sven Schoradt (s.schoradt@infotec-edv.de)
  */
 class Order extends Object {
+    /**
+     * Local transaction id.
+     *
+     * @var integer
+     */
     public $tid;
 
     /**
      * The amount for the transaction
      *
-     * @var $price
+     * This value is computed by the addItem methode.
+     *
+     * @var number
      */
     public $price = 0;
 
     /**
      * The currency for the transaction
      *
-     * @var $currency
+     * Thre character currency code like EUR.
+     * @var string
      */
     public $currency = "EUR";
 
     /**
      * The language for the transaction
      *
-     * @var $currency
+     * Two character country code like DE or EN
+     *
+     * @var string
      */
     public $language = "DE";
 
     /**
-     * The customer (name) for the transaction
+     * The customer (name) for the transaction.
      *
-     * @var $customer
+     * @var string
      */
     public $customerName;
 
     /**
      * The customer e-mail for the transaction
      *
-     * @var $customer_email
+     * @var string
      */
     public $customerMail;
 
     /**
      * The customer ID for the transaction
      *
-     * @var $customer_id
+     * @var int
      */
     public $customerId;
 
     /**
      * The customer street for the transaction
      *
-     * @var $customer_street
+     * @var string
      */
     public $customerStreet;
 
     /**
      * The customer ZIP code for the transaction
      *
-     * @var $customer_zip
+     * @var string
      */
     public $customerZip;
 
     /**
      * The customer city for the transaction
      *
-     * @var $customerCity
+     * @var string
      */
     public $customerCity;
 
     /**
      * The customer country ISO code for the transaction
      *
-     * @var $customer_country
+     * @var string
      */
     public $customerCountry = "DE";
 
@@ -115,15 +125,25 @@ class Order extends Object {
      */
     private $cardItems = [];
 
+    /**
+     * Adds an order item to the order.
+     *
+     * Stores the item and computes the new order price by adding the item price.
+     *
+     * @param \Yii2MPay24\OrderItem $item
+     */
     public function addItem(OrderItem $item) {
         $this->cardItems[] = $item;
 
         $this->price += $item->price;
     }
 
+    /**
+     * Returns the list of order items.
+     *
+     * @return array
+     */
     public function getItems() {
         return $this->cardItems;
     }
-
-
 }

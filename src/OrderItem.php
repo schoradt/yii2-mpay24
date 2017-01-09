@@ -35,17 +35,52 @@ use yii\base\Object;
  * @author schoradt_sven
  */
 class OrderItem extends Object {
+    /**
+     * Item number in the order.
+     *
+     * @var integer
+     */
     public $number;
 
+    /**
+     * Item product ident.
+     *
+     * @var string
+     */
     public $ident;
 
+    /**
+     * Item description.
+     *
+     * @var string
+     */
     public $description;
 
+    /**
+     * Items package description.
+     *
+     * @var string
+     */
     public $package;
 
+    /**
+     * Item quantity.
+     *
+     * @var integer
+     */
     public $quantity = 0;
 
+    /**
+     * Item price.
+     *
+     * @var number
+     */
     public $price = 0.00;
 
+    /**
+     * Item tax value.
+     *
+     * @var number
+     */
     public $tax = 0.00;
 }
