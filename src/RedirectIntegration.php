@@ -182,8 +182,6 @@ class RedirectIntegration extends Object {
             throw new \yii\base\Exception("payment is not configured");
         }
 
-        Yii::info(print_r($params, true));
-
         $this->mpay24 = new MPAY24(
             $params['merchant'],
             $params['soappass'],
