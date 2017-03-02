@@ -15,12 +15,12 @@
     },
     "require": {
         "php": ">=5.6.0",
-        "schoradt/mpay24": "~3.2"
+        "mpay24/mpay24-php": "~4.0"
     },
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/schoradt/mpay24"
+            "url": "https://github.com/schoradt/mpay24-php"
         }
     ]
 }

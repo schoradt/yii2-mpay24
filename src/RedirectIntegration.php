@@ -32,7 +32,7 @@ use yii\base\Object;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
-use MPayAPI\MPAY24;
+use Mpay24\Mpay24;
 
 /**
  * This class provides the methodes for a redirect integration of the mpay24
@@ -44,7 +44,7 @@ class RedirectIntegration extends Object {
     /**
      * MPay24 API
      *
-     * @var \MPayAPI\MPAY24
+     * @var \Mpay24\Mpay24
      */
     private $mpay24;
 
@@ -200,12 +200,12 @@ class RedirectIntegration extends Object {
      *
      * @param \Yii2MPay24\Order $order Order to execute.
      *
-     * @return \MPayAPI\PaymentResponse
+     * @return \Mpay24\Responses\SelectPaymentResponse
      */
     public function pay(Order $order) {
         $mdxi = $this->createMdxi($order);
 
-        return $this->mpay24->selectPayment($mdxi);
+        return $this->mpay24->paymentPage($mdxi);
     }
 
     /**
@@ -213,10 +213,10 @@ class RedirectIntegration extends Object {
      *
      * @param int $tid Local transaction id.
      *
-     * @return \MPayAPI\TransactionStatusResponse
+     * @return \Mpay24\Responses\TransactionStatusResponse
      */
     public function transactionStatus($tid) {
-        return $this->mpay24->transactionStatus(null, $tid);
+        return $this->mpay24->paymentStatusByTid($tid);
     }
 
     /**
@@ -224,10 +224,10 @@ class RedirectIntegration extends Object {
      *
      * @param \Yii2MPay24\Order $order Order object to transform.
      *
-     * @return \MPayAPI\ORDER Order XML object
+     * @return \Mpay24\Mpay24Order Order XML object
      */
     private function createMdxi(Order $order) {
-        $mdxi = new \MPayAPI\ORDER();
+        $mdxi = new \Mpay24\Mpay24Order();
 
         $mdxi->Order->Tid = $order->tid;
 
@@ -336,7 +336,7 @@ class RedirectIntegration extends Object {
     /**
      * Set the order style options into the ORDER object.
      *
-     * @param \MPayAPI\ORDER $mdxi ORDER object.
+     * @param \Mpay24\Mpay24Order $mdxi Mpay24Order object.
      */
     private function configureOrderStyles($mdxi) {
         // Order design settings for the mPAY24 pay page
@@ -357,7 +357,7 @@ class RedirectIntegration extends Object {
     /**
      * Set the shopping card style options into the ORDER object.
      *
-     * @param \MPayAPI\ORDER $mdxi ORDER object.
+     * @param \Mpay24\Mpay24Order $mdxi ORDER object.
      */
     private function configureShoppingCardStyles($mdxi) {
         $mdxi->Order->ShoppingCart->setStyle($this->options['mPAY24ShoppingCartStyle']);
@@ -385,7 +385,7 @@ class RedirectIntegration extends Object {
     /**
      * Set the shopping card item style options into the ORDER object.
      *
-     * @param \MPayAPI\ORDER $mdxi ORDER object.
+     * @param \Mpay24\Mpay24Order $mdxi ORDER object.
      */
     private function configureShoppingCardItemStyles($mdxi, $item) {
         if ($item->number % 2) {
@@ -415,7 +415,7 @@ class RedirectIntegration extends Object {
     /**
      * Set the price style options into the ORDER object.
      *
-     * @param \MPayAPI\ORDER $mdxi ORDER object.
+     * @param \Mpay24\Mpay24Order $mdxi ORDER object.
      */
     private function configurePriceStyle($mdxi) {
         $mdxi->Order->Price->setHeader($this->options['mPAY24PriceHeader']);
@@ -426,7 +426,7 @@ class RedirectIntegration extends Object {
     /**
      * Set the template options into the ORDER object.
      *
-     * @param \MPayAPI\ORDER $mdxi ORDER object.
+     * @param \Mpay24\Mpay24Order $mdxi ORDER object.
      */
     private function configureTemplate($mdxi) {
         $mdxi->Order->TemplateSet = "WEB";
