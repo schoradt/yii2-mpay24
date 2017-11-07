@@ -27,14 +27,14 @@
 
 namespace Yii2MPay24;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 
 /**
  * Description of OrderItem
  *
  * @author schoradt_sven
  */
-class OrderItem extends Object {
+class OrderItem extends BaseObject {
     /**
      * Item number in the order.
      *

@@ -28,7 +28,7 @@
 namespace Yii2MPay24;
 
 use Yii;
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
@@ -40,7 +40,7 @@ use Mpay24\Mpay24;
  *
  * @author Sven Schoradt
  */
-class RedirectIntegration extends Object {
+class RedirectIntegration extends BaseObject {
     /**
      * MPay24 API
      *

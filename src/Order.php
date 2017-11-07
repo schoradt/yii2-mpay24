@@ -28,14 +28,14 @@
 
 namespace Yii2MPay24;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 
 /**
  * The class encapsulates an order, that can be given to the payment processor.
  *
  * @author Sven Schoradt (s.schoradt@infotec-edv.de)
  */
-class Order extends Object {
+class Order extends BaseObject {
     /**
      * Local transaction id.
      *
