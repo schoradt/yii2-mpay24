@@ -231,12 +231,8 @@ class RedirectIntegration extends BaseObject {
 
         $mdxi->Order->Tid = $order->tid;
 
-        //$mdxi->Order->ClientIP = filter_input(INPUT_SERVER, 'REMOTE_ADDR', FILTER_VALIDATE_IP);
-
         $this->configureOrderStyles($mdxi);
-
         $this->configureTemplate($mdxi);
-
         $this->configureShoppingCardStyles($mdxi);
 
         $items = $order->getItems();
@@ -247,88 +243,12 @@ class RedirectIntegration extends BaseObject {
              */
             $item = $items[$index -1];
 
-            $item->number = $index;
-
-            $mdxi->Order->ShoppingCart->Item($index)->Number = $item->number;
-
-            if ($item->ident) {
-                $mdxi->Order->ShoppingCart->Item($index)->ProductNr = $item->ident;
-            }
-
-            $mdxi->Order->ShoppingCart->Item($index)->Description = $item->description;
-
-            if ($item->package) {
-                $mdxi->Order->ShoppingCart->Item($index)->Package = $item->package;
-            }
-
-            $mdxi->Order->ShoppingCart->Item($index)->Quantity = $item->quantity;
-            $mdxi->Order->ShoppingCart->Item($index)->ItemPrice = number_format($item->price, 2, '.', '');
-            $mdxi->Order->ShoppingCart->Item($index)->ItemPrice->setTax(number_format($item->tax, 2, '.', ''));
-
-            $mdxi->Order->ShoppingCart->Item($index)->Price = number_format($item->quantity * $item->tax, 2, '.', '');
-
-            $this->configureShoppingCardItemStyles($mdxi, $item);
+            $this->transferOrderItem($mdxi, $item, $index);
         }
 
-        //TODO: set this properties if they were set in the order
-        //$mdxi->Order->ShoppingCart->SubTotal(1, number_format("10.00", 2, '.', ''));
-        //$mdxi->Order->ShoppingCart->SubTotal(1)->setHeader($this->options['mPAY24ShoppingCartSubTotalHeader']);
-//        $mdxi->Order->ShoppingCart->SubTotal(1)->setHeaderStyle($this->options['mPAY24ShoppingCartSubTotalHeaderStyle']);
-//        $mdxi->Order->ShoppingCart->SubTotal(1)->setStyle($this->options['mPAY24ShoppingCartSubTotalStyle']);
-//
-//        $mdxi->Order->ShoppingCart->ShippingCosts(1, number_format("5.00", 2, '.', ''));
-//        $mdxi->Order->ShoppingCart->ShippingCosts(1)->setHeader($this->options['mPAY24ShoppingCartShippingCostsHeader']);
-//        $mdxi->Order->ShoppingCart->ShippingCosts(1)->setHeaderStyle($this->options['mPAY24ShoppingCartShippingCostsHeaderStyle']);
-//        $mdxi->Order->ShoppingCart->ShippingCosts(1)->setStyle($this->options['mPAY24ShoppingCartShippingCostsStyle']);
-//
-//        $mdxi->Order->ShoppingCart->ShippingCosts(1)->setTax(number_format("1.00", 2, '.', ''));
-//
-//        $mdxi->Order->ShoppingCart->Tax(1, number_format("2.00", 2, '.', ''));
-//        $mdxi->Order->ShoppingCart->Tax(1)->setHeader($this->options['mPAY24ShoppingCartTaxHeader']);
-//        $mdxi->Order->ShoppingCart->Tax(1)->setHeaderStyle($this->options['mPAY24ShoppingCartTaxHeaderStyle']);
-//        $mdxi->Order->ShoppingCart->Tax(1)->setStyle($this->options['mPAY24ShoppingCartTaxStyle']);
-//
-//        $mdxi->Order->ShoppingCart->Discount(1, '-' . number_format("5.00", 2, '.', ''));
-//        $mdxi->Order->ShoppingCart->Discount(1)->setHeader($this->options['mPAY24ShoppingCartDiscountHeader']);
-//        $mdxi->Order->ShoppingCart->Discount(1)->setHeaderStyle($this->options['mPAY24ShoppingCartDiscountHeaderStyle']);
-//        $mdxi->Order->ShoppingCart->Discount(1)->setStyle($this->options['mPAY24ShoppingCartDiscountStyle']);
+        $this->transferOrder($mdxi, $order);
 
-        $mdxi->Order->Price = $order->price;
-        $this->configurePriceStyle($mdxi);
-
-        $mdxi->Order->Currency = $order->currency;
-
-        $mdxi->Order->Customer = $order->customerName;
-
-        $mdxi->Order->Customer->setId($order->customerId);
-        $mdxi->Order->Customer->setUseProfile("false");
-
-        $mdxi->Order->BillingAddr->setMode("ReadOnly");
-        $mdxi->Order->BillingAddr->Name    = $order->customerName;
-        $mdxi->Order->BillingAddr->Street  = $order->customerStreet;
-        //$mdxi->Order->BillingAddr->Street2 = $this->customer_street2;
-        $mdxi->Order->BillingAddr->Zip     = $order->customerZip;
-        $mdxi->Order->BillingAddr->City    = $order->customerCity;
-        //TODO $mdxi->Order->BillingAddr->Email   = $order->customerMail;
-
-        $mdxi->Order->BillingAddr->Country->setCode($order->customerCountry);
-
-        $mdxi->Order->ShippingAddr->setMode("ReadOnly");
-        $mdxi->Order->ShippingAddr->Name    = $order->customerName;
-        $mdxi->Order->ShippingAddr->Street  = $order->customerStreet;
-        //$mdxi->Order->ShippingAddr->Street2 = $this->customer_street2;
-        $mdxi->Order->ShippingAddr->Zip     = $order->customerZip;
-        $mdxi->Order->ShippingAddr->City    = $order->customerCity;
-        //TODO $mdxi->Order->ShippingAddr->Email   = $order->customerMail;
-
-        $mdxi->Order->ShippingAddr->Country->setCode($order->customerCountry);
-
-        $mdxi->Order->URL->Success      = Url::to([$this->successRoute], true);
-        $mdxi->Order->URL->Error        = Url::to([$this->errorRoute], true);
-        $mdxi->Order->URL->Confirmation = Url::to([$this->confirmationRoute, 'token' => ''], true);
-        $mdxi->Order->URL->Cancel       = Url::to([$this->cancelRoute], true);
-
-        \Yii::trace("MDXI: " . $mdxi->toXML());
+        $this->setHandlerUrls($mdxi);
 
         return $mdxi;
     }
@@ -338,8 +258,7 @@ class RedirectIntegration extends BaseObject {
      *
      * @param \Mpay24\Mpay24Order $mdxi Mpay24Order object.
      */
-    private function configureOrderStyles($mdxi) {
-        // Order design settings for the mPAY24 pay page
+    private function configureOrderStyles(Mpay24Order $mdxi) {
         $mdxi->Order->setStyle($this->options['mPAY24OrderStyle']);
         $mdxi->Order->setLogoStyle($this->options['mPAY24OrderLogoStyle']);
         $mdxi->Order->setPageHeaderStyle($this->options['mPAY24OrderPageHeaderStyle']);
@@ -359,7 +278,7 @@ class RedirectIntegration extends BaseObject {
      *
      * @param \Mpay24\Mpay24Order $mdxi ORDER object.
      */
-    private function configureShoppingCardStyles($mdxi) {
+    private function configureShoppingCardStyles(Mpay24Order $mdxi) {
         $mdxi->Order->ShoppingCart->setStyle($this->options['mPAY24ShoppingCartStyle']);
         $mdxi->Order->ShoppingCart->setHeader($this->options['mPAY24ShoppingCartHeader']);
         $mdxi->Order->ShoppingCart->setHeaderStyle($this->options['mPAY24ShoppingCartHeaderStyle']);
@@ -381,6 +300,88 @@ class RedirectIntegration extends BaseObject {
 
         $mdxi->Order->ShoppingCart->Description = ($this->options['mPAY24ShoppingCartDescription']);
     }
+
+    /**
+     * Create an order item inside the mdxi object.
+     *
+     * @param \Yii2MPay24\Mpay24Order $mdxi  Mdxi order object.
+     * @param \Yii2MPay24\OrderItem   $item  Order item to transfer.
+     * @param integer                 $index Index of the order item.
+     */
+    private function transferOrderItem(Mpay24Order $mdxi, OrderItem $item, $index)
+    {
+        $item->number = $index;
+
+        $mdxi->Order->ShoppingCart->Item($index)->Number = $item->number;
+
+        if ($item->ident) {
+           $mdxi->Order->ShoppingCart->Item($index)->ProductNr = $item->ident;
+        }
+
+        $mdxi->Order->ShoppingCart->Item($index)->Description = $item->description;
+
+        if ($item->package) {
+           $mdxi->Order->ShoppingCart->Item($index)->Package = $item->package;
+        }
+
+        $mdxi->Order->ShoppingCart->Item($index)->Quantity = $item->quantity;
+        $mdxi->Order->ShoppingCart->Item($index)->ItemPrice = number_format($item->price, 2, '.', '');
+        $mdxi->Order->ShoppingCart->Item($index)->ItemPrice->setTax(number_format($item->tax, 2, '.', ''));
+
+        $mdxi->Order->ShoppingCart->Item($index)->Price = number_format($item->quantity * $item->tax, 2, '.', '');
+
+        $this->configureShoppingCardItemStyles($mdxi, $item);
+    }
+
+    /**
+     * Transfer the billing and shipping information from the order into
+     * the mdxi object.
+     *
+     * @param \Yii2MPay24\Mpay24Order $mdxi  Mdxi order object.
+     * @param \Yii2MPay24\Order       $order Order object to transfer.
+     */
+    private function transferOrder(Mpay24Order $mdxi, Order $order)
+    {
+        $mdxi->Order->Price = $order->price;
+        $this->configurePriceStyle($mdxi);
+
+        $mdxi->Order->Currency = $order->currency;
+
+        $mdxi->Order->Customer = $order->customerName;
+
+        $mdxi->Order->Customer->setId($order->customerId);
+        $mdxi->Order->Customer->setUseProfile("false");
+
+        $mdxi->Order->BillingAddr->setMode("ReadOnly");
+        $mdxi->Order->BillingAddr->Name    = $order->customerName;
+        $mdxi->Order->BillingAddr->Street  = $order->customerStreet;
+        $mdxi->Order->BillingAddr->Zip     = $order->customerZip;
+        $mdxi->Order->BillingAddr->City    = $order->customerCity;
+
+        $mdxi->Order->BillingAddr->Country->setCode($order->customerCountry);
+
+        $mdxi->Order->ShippingAddr->setMode("ReadOnly");
+        $mdxi->Order->ShippingAddr->Name    = $order->customerName;
+        $mdxi->Order->ShippingAddr->Street  = $order->customerStreet;
+        $mdxi->Order->ShippingAddr->Zip     = $order->customerZip;
+        $mdxi->Order->ShippingAddr->City    = $order->customerCity;
+
+        $mdxi->Order->ShippingAddr->Country->setCode($order->customerCountry);
+    }
+
+    /**
+     * Set the handler Urls.
+     *
+     * @param \Yii2MPay24\Mpay24Order $mdxi Mdxi order object.
+     */
+    private function setHandlerUrls(Mpay24Order $mdxi)
+    {
+        $mdxi->Order->URL->Success      = Url::to([$this->successRoute], true);
+        $mdxi->Order->URL->Error        = Url::to([$this->errorRoute], true);
+        $mdxi->Order->URL->Confirmation = Url::to([$this->confirmationRoute, 'token' => ''], true);
+        $mdxi->Order->URL->Cancel       = Url::to([$this->cancelRoute], true);
+    }
+
 
     /**
      * Set the shopping card item style options into the ORDER object.
