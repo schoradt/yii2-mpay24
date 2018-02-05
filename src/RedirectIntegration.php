@@ -258,7 +258,7 @@ class RedirectIntegration extends BaseObject {
      *
      * @param \Mpay24\Mpay24Order $mdxi Mpay24Order object.
      */
-    private function configureOrderStyles(Mpay24Order $mdxi) {
+    private function configureOrderStyles(\Mpay24\Mpay24Order $mdxi) {
         $mdxi->Order->setStyle($this->options['mPAY24OrderStyle']);
         $mdxi->Order->setLogoStyle($this->options['mPAY24OrderLogoStyle']);
         $mdxi->Order->setPageHeaderStyle($this->options['mPAY24OrderPageHeaderStyle']);
@@ -278,7 +278,7 @@ class RedirectIntegration extends BaseObject {
      *
      * @param \Mpay24\Mpay24Order $mdxi ORDER object.
      */
-    private function configureShoppingCardStyles(Mpay24Order $mdxi) {
+    private function configureShoppingCardStyles(\Mpay24\Mpay24Order $mdxi) {
         $mdxi->Order->ShoppingCart->setStyle($this->options['mPAY24ShoppingCartStyle']);
         $mdxi->Order->ShoppingCart->setHeader($this->options['mPAY24ShoppingCartHeader']);
         $mdxi->Order->ShoppingCart->setHeaderStyle($this->options['mPAY24ShoppingCartHeaderStyle']);
@@ -304,11 +304,11 @@ class RedirectIntegration extends BaseObject {
     /**
      * Create an order item inside the mdxi object.
      *
-     * @param \Yii2MPay24\Mpay24Order $mdxi  Mdxi order object.
+     * @param \Mpay24\Mpay24Order $mdxi  Mdxi order object.
      * @param \Yii2MPay24\OrderItem   $item  Order item to transfer.
      * @param integer                 $index Index of the order item.
      */
-    private function transferOrderItem(Mpay24Order $mdxi, OrderItem $item, $index)
+    private function transferOrderItem(\Mpay24\Mpay24Order $mdxi, OrderItem $item, $index)
     {
         $item->number = $index;
 
@@ -337,10 +337,10 @@ class RedirectIntegration extends BaseObject {
      * Transfer the billing and shipping information from the order into
      * the mdxi object.
      *
-     * @param \Yii2MPay24\Mpay24Order $mdxi  Mdxi order object.
+     * @param \Mpay24\Mpay24Order $mdxi  Mdxi order object.
      * @param \Yii2MPay24\Order       $order Order object to transfer.
      */
-    private function transferOrder(Mpay24Order $mdxi, Order $order)
+    private function transferOrder(\Mpay24\Mpay24Order $mdxi, Order $order)
     {
         $mdxi->Order->Price = $order->price;
         $this->configurePriceStyle($mdxi);
@@ -374,7 +374,7 @@ class RedirectIntegration extends BaseObject {
      *
      * @param \Yii2MPay24\Mpay24Order $mdxi Mdxi order object.
      */
-    private function setHandlerUrls(Mpay24Order $mdxi)
+    private function setHandlerUrls(\Mpay24\Mpay24Order $mdxi)
     {
         $mdxi->Order->URL->Success      = Url::to([$this->successRoute], true);
         $mdxi->Order->URL->Error        = Url::to([$this->errorRoute], true);
@@ -388,7 +388,7 @@ class RedirectIntegration extends BaseObject {
      *
      * @param \Mpay24\Mpay24Order $mdxi ORDER object.
      */
-    private function configureShoppingCardItemStyles($mdxi, $item) {
+    private function configureShoppingCardItemStyles(\Mpay24\Mpay24Order $mdxi, OrderItem $item) {
         if ($item->number % 2) {
             $ext = 'Even';
         } else {
@@ -418,7 +418,7 @@ class RedirectIntegration extends BaseObject {
      *
      * @param \Mpay24\Mpay24Order $mdxi ORDER object.
      */
-    private function configurePriceStyle($mdxi) {
+    private function configurePriceStyle(\Mpay24\Mpay24Order $mdxi) {
         $mdxi->Order->Price->setHeader($this->options['mPAY24PriceHeader']);
         $mdxi->Order->Price->setHeaderStyle($this->options['mPAY24PriceHeaderStyle']);
         $mdxi->Order->Price->setStyle($this->options['mPAY24PriceStyle']);
@@ -429,7 +429,7 @@ class RedirectIntegration extends BaseObject {
      *
      * @param \Mpay24\Mpay24Order $mdxi ORDER object.
      */
-    private function configureTemplate($mdxi) {
+    private function configureTemplate(\Mpay24\Mpay24Order $mdxi) {
         $mdxi->Order->TemplateSet = "WEB";
         $mdxi->Order->TemplateSet->setLanguage($this->language);
         $mdxi->Order->TemplateSet->setCSSName("MOBILE");
